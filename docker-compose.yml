@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    command: mongod --quiet --logpath /dev/null --logappend
+
+  server:
+    build:
+      context: ./back
+    container_name: server
+    working_dir: /app
+    volumes:
+      - ./back:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - PATH=/root/.local:$PATH
+      - MONGO_URI=mongodb://mongo:27017/area
+    depends_on:
+      - mongo
+
+  client_mobile:
+    build:
+      context: ./front/mobile
+    container_name: client_mobile
+    working_dir: /app
+    volumes:
+      - shared-client:/shared
+    command: >
+      sh -c "
+      cp -r /app/app-release.apk /shared/client.apk &&
+      echo 'Build completed' > /shared/client_mobile.txt
+      "
+
+  client_web_build:
+    build:
+      context: ./front/web
+    container_name: client_web_build
+    volumes:
+      - shared-client:/shared
+    depends_on:
+      - client_mobile
+    command: >
+      sh -c "
+      echo 'Waiting for /shared/client_mobile.txt to be available...' &&
+      while [ ! -f /shared/client_mobile.txt ]; do
+        sleep 1;
+      done &&
+      echo 'client_mobile completed successfully. Continuing...' &&
+      cp -r /shared/client.apk /app/public/client.apk &&
+      rm -rf /shared/client.apk &&
+      cd /app &&
+      npm run build &&
+      cp -r /app /shared &&
+      echo 'Build completed' > /shared/client_web.txt
+      "
+
+  client_web:
+    image: node:20-alpine
+    container_name: client_web
+    volumes:
+      - shared-client:/shared
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - NODE_ENV=production
+      - API_URL=http://localhost:8080
+    depends_on:
+      - server
+      - client_web_build
+    command: >
+      sh -c "
+      echo 'Waiting for /shared/client_web.txt to be available...' &&
+      while [ ! -f /shared/client_web.txt ]; do
+        sleep 1;
+      done &&
+      echo 'client_web_build completed successfully. Continuing...' &&
+      cp -r /shared/* . &&
+      node /app/.output/server/index.mjs
+      "
+
+volumes:
+  mongo-data:
+  shared-client:

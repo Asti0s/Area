@@ -1,0 +1,15 @@
+# Git
+.git/*
+
+#IDE related
+.idea/*
+.vscode/*
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+app/build/*
+pubspec.lock

@@ -1,0 +1,53 @@
+@use 'variables' as *;
+
+.form-container {
+  display: flex;
+  color: var(--text-color);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--bg-secondary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.form-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+}
+
+.form-secondary-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.label {
+  display: block;
+  color: var(--text-color);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--bg);
+  color: var(--text-color);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+  }
+}
