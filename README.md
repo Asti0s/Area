@@ -50,4 +50,4 @@ For more information, please refer to the documentation of each service:
 
 The architecture of the project is as follows:
 
-![alt text](diagram.png)
+![alt text](assets/diagram.png)
